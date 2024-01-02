@@ -1,0 +1,33 @@
+image: matthewtingum/muslcc-powerpc:0.1
+
+aliases:
+  sources:
+    script:
+    # TODO: Collect sources and patches from credible source -- verify hash
+    - tar -xvf gdb-9.2.tar.xz
+    - patch -d gdb-9.2/ -p1 < patch/0001-ppc-ptrace-Define-pt_regs-uapi_pt_regs-on-GLIBC-syst.patch
+    - patch -d gdb-9.2/ -p1 < patch/0002-sh-ptrace-Define-pt_-dsp-regs-uapi_pt_-dsp-regs-on-G.patch
+    - patch -d gdb-9.2/ -p1 < patch/0003-use-asm-sgidefs.h.patch
+    - patch -d gdb-9.2/ -p1 < patch/0004-gdbserver-fix-build-for-m68k.patch
+    - patch -d gdb-9.2/ -p1 < patch/0005-nat-fork-inferior-include-linux-ptrace.h.patch
+    - patch -d gdb-9.2/ -p1 < patch/0006-sim-ppc-Fix-linker-error-with-fno-common.patch
+    - patch -d gdb-9.2/ -p1 < patch/0007-Fix-Python3.9-related-runtime-problems.patch
+    - patch -d gdb-9.2/ -p1 < patch/0007-gdb-configure.tgt-build-gdbserver-with-m68k-and-ucli.patch
+  build_gdb:
+    script:
+    - cd gdb-9.2
+    - mkdir build_gdb
+    - cd build_gdb
+    - ../configure --target=powerpc-linux-musl --host=powerpc-linux-musl --enable-sim-powerpc
+    - make LDFLAGS=-static -j `nproc`
+  build_gdbserver:
+    script:
+    - cd gdb-9.2/
+    - mkdir build_gdbserver
+    - cd build_gdbserver
+    - ../gdb/gdbserver/configure --target=powerpc-linux-musl --host=powerpc-linux-musl
+    - make LDFLAGS=-static -j `nproc`
+  strip:
+    script:
+    - powerpc-linux-musl-strip gdb-9.2/build_gdb/gdb/gdb
+    - powerpc-linux-musl-strip gdb-9.2/build_gdbserver/gdbserver
