@@ -4,6 +4,7 @@ aliases:
   sources:
     script:
     # TODO: Collect sources and patches from credible source -- verify hash
+    - wget https://ftp.gnu.org/gnu/gdb/gdb-9.2.tar.xz
     - tar -xvf gdb-9.2.tar.xz
     - patch -d gdb-9.2/ -p1 < patch/0001-ppc-ptrace-Define-pt_regs-uapi_pt_regs-on-GLIBC-syst.patch
     - patch -d gdb-9.2/ -p1 < patch/0002-sh-ptrace-Define-pt_-dsp-regs-uapi_pt_-dsp-regs-on-G.patch
